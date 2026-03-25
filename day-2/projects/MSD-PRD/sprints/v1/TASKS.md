@@ -27,9 +27,10 @@
   - Files: src/lib/prompts.ts
   - Completed: 2026-03-24 — Comprehensive system prompt covering all 12 sections with strict JSON output format, research-grade requirements, parseGeminiResponse helper. 5 unit tests passing.
 
-- [ ] Task 6: Build the `.ipynb` file constructor — convert Gemini's structured response into valid nbformat v4 JSON (P0)
+- [x] Task 6: Build the `.ipynb` file constructor — convert Gemini's structured response into valid nbformat v4 JSON (P0)
   - Acceptance: Given structured content, produces a valid `.ipynb` file that opens correctly in Jupyter/Colab with proper cell types (markdown + code), metadata, and kernel spec
-  - Files: lib/notebook-builder.ts
+  - Files: src/lib/notebook-builder.ts
+  - Completed: 2026-03-24 — Full notebook builder converting Gemini JSON into nbformat v4 with all 12 sections as properly typed cells. 8 unit tests passing.
 
 - [ ] Task 7: Implement Server-Sent Events (SSE) streaming in the API route to send progress milestones during generation (P1)
   - Acceptance: API route streams events like "Analyzing paper structure...", "Extracting algorithms...", "Generating implementation...", "Building notebook..." as the pipeline progresses. Frontend can connect via EventSource
