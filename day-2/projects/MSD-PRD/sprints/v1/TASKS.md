@@ -1,6 +1,6 @@
 # Sprint v1 — Tasks: PaperToCode
 
-## Status: In Progress
+## Status: Complete
 
 - [x] Task 1: Initialize Next.js 15 project with Tailwind CSS v4, Google Fonts (Space Grotesk + DM Mono), and base dark theme (P0)
   - Acceptance: `npm run dev` starts without errors; page renders with black background, correct fonts loaded, Tailwind utility classes working
@@ -47,6 +47,7 @@
   - Files: src/components/download-section.tsx, src/lib/colab-link.ts, src/app/page.tsx
   - Completed: 2026-03-24 — Download .ipynb button, Open in Colab button (downloads then opens Colab), "Generate another" reset. 2 unit + 2 E2E tests passing.
 
-- [ ] Task 10: End-to-end integration, error handling, and UI polish — connect all components, handle errors gracefully, responsive design (P2)
+- [x] Task 10: End-to-end integration, error handling, and UI polish — connect all components, handle errors gracefully, responsive design (P2)
   - Acceptance: Full flow works: enter key → upload PDF → see progress → download notebook. Error states shown for: invalid API key, PDF too large, Gemini API errors, network failures. Works on mobile. Smooth transitions between states
-  - Files: app/page.tsx (wire everything), components/* (error states), app/globals.css (animations)
+  - Files: src/app/page.tsx, src/app/globals.css, src/components/progress-display.tsx
+  - Completed: 2026-03-24 — Fade-in animations, pulse glow on progress, responsive mobile layout, footer, error state with retry, full flow tested. 48 total tests passing, 0 vulnerabilities.

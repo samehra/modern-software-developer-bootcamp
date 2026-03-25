@@ -104,12 +104,14 @@ export default function Home() {
       <Hero />
 
       <div className="w-full max-w-md flex flex-col items-center gap-8 mt-4">
-        {appState !== "generating" && (
-          <>
+        {appState !== "generating" && appState !== "done" && (
+          <div className="w-full flex flex-col items-center gap-8 animate-fade-in">
             <ApiKeyInput value={apiKey} onChange={setApiKey} />
 
             {apiKey.length > 0 && (
-              <PdfUpload onFileSelect={setPdfFile} selectedFile={pdfFile} />
+              <div className="w-full animate-fade-in">
+                <PdfUpload onFileSelect={setPdfFile} selectedFile={pdfFile} />
+              </div>
             )}
 
             {apiKey.length > 0 && pdfFile && appState === "idle" && (
@@ -117,16 +119,18 @@ export default function Home() {
                 data-testid="generate-button"
                 onClick={handleGenerate}
                 disabled={isGenerating}
-                className="w-full max-w-md bg-teal hover:bg-teal-dark text-black font-heading font-semibold py-3 px-6 rounded-lg transition-colors text-sm disabled:opacity-50"
+                className="w-full max-w-md bg-teal hover:bg-teal-dark text-black font-heading font-semibold py-3 px-6 rounded-lg transition-colors text-sm disabled:opacity-50 animate-fade-in"
               >
                 Generate Notebook
               </button>
             )}
-          </>
+          </div>
         )}
 
         {(appState === "generating" || appState === "error") && (
-          <ProgressDisplay currentStage={currentStage} error={error} />
+          <div className="w-full animate-fade-in">
+            <ProgressDisplay currentStage={currentStage} error={error} />
+          </div>
         )}
 
         {appState === "error" && (
@@ -137,25 +141,33 @@ export default function Home() {
               setError(null);
               setCurrentStage(null);
             }}
-            className="w-full max-w-md border border-gray-800 text-gray-400 hover:text-white hover:border-gray-600 font-heading font-semibold py-3 px-6 rounded-lg transition-colors text-sm"
+            className="w-full max-w-md border border-gray-800 text-gray-400 hover:text-white hover:border-gray-600 font-heading font-semibold py-3 px-6 rounded-lg transition-colors text-sm animate-fade-in"
           >
             Try Again
           </button>
         )}
 
         {appState === "done" && notebook && (
-          <DownloadSection
-            notebook={notebook}
-            paperName={paperName}
-            onReset={() => {
-              setAppState("idle");
-              setNotebook(null);
-              setCurrentStage(null);
-              setPdfFile(null);
-            }}
-          />
+          <div className="w-full animate-fade-in">
+            <DownloadSection
+              notebook={notebook}
+              paperName={paperName}
+              onReset={() => {
+                setAppState("idle");
+                setNotebook(null);
+                setCurrentStage(null);
+                setPdfFile(null);
+              }}
+            />
+          </div>
         )}
       </div>
+
+      <footer className="mt-auto pt-16 pb-8 text-center">
+        <p className="text-xs font-mono text-gray-800">
+          PaperToCode v1 — Your API key never leaves your browser
+        </p>
+      </footer>
     </main>
   );
 }

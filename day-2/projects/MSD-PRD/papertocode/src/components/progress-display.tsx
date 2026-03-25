@@ -49,7 +49,7 @@ export default function ProgressDisplay({
   return (
     <div
       data-testid="progress-display"
-      className="w-full max-w-md rounded-lg border border-gray-800 bg-gray-900/50 p-6"
+      className="w-full max-w-md rounded-lg border border-gray-800 bg-gray-900/50 p-6 animate-pulse-glow"
     >
       <div className="flex items-center justify-between mb-4">
         <span
