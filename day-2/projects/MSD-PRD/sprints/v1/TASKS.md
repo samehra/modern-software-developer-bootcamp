@@ -7,9 +7,10 @@
   - Files: package.json, tsconfig.json, next.config.ts, postcss.config.mjs, src/app/layout.tsx, src/app/globals.css, src/app/page.tsx
   - Completed: 2026-03-24 — Next.js 16 + Tailwind v4 project initialized with Space Grotesk + DM Mono fonts, ARC Prize-inspired dark theme with grid background, teal accent color. 6 Playwright E2E tests passing.
 
-- [ ] Task 2: Build the main page layout — hero section with app title, tagline, and centered single-column container (P0)
+- [x] Task 2: Build the main page layout — hero section with app title, tagline, and centered single-column container (P0)
   - Acceptance: Landing page shows "PaperToCode" branding, tagline ("Turn research papers into executable notebooks"), ARC Prize-inspired dark aesthetic with teal accents, subtle grid background pattern
-  - Files: app/page.tsx, components/hero.tsx
+  - Files: src/app/page.tsx, src/components/hero.tsx
+  - Completed: 2026-03-24 — Hero section with "Powered by Gemini 2.5 Pro" badge, title, tagline, description, and 3-step workflow indicators. 9 Playwright tests passing.
 
 - [ ] Task 3: Build the API key input component with validation and the PDF upload component with drag-and-drop (P0)
   - Acceptance: User can enter API key (masked input, stored in React state only), drag-and-drop or click-to-upload PDF (validates file type + max 20MB), both components styled with dark theme

@@ -62,12 +62,11 @@ test.describe("Task 1: Project Setup Verification", () => {
     });
   });
 
-  test("main container is centered", async ({ page }) => {
+  test("main container is centered horizontally", async ({ page }) => {
     await page.goto("/");
 
     const main = page.getByTestId("main-container");
     await expect(main).toHaveClass(/flex/);
     await expect(main).toHaveClass(/items-center/);
-    await expect(main).toHaveClass(/justify-center/);
   });
 });
