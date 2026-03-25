@@ -22,9 +22,10 @@
   - Files: src/app/api/generate/route.ts, src/lib/gemini.ts
   - Completed: 2026-03-24 — API route with FormData parsing, validation, Gemini 2.5 Pro multimodal call, error handling. 3 unit tests + 15 E2E tests passing.
 
-- [ ] Task 5: Engineer the notebook generation prompt — detailed system prompt that instructs Gemini to output structured notebook content with all 12 sections (P0)
+- [x] Task 5: Engineer the notebook generation prompt — detailed system prompt that instructs Gemini to output structured notebook content with all 12 sections (P0)
   - Acceptance: Prompt produces structured JSON output from Gemini with: paper metadata, math formulations (LaTeX), algorithm implementations (Python), synthetic data generation, visualizations, ablation studies. Test with a sample paper
-  - Files: lib/prompts.ts
+  - Files: src/lib/prompts.ts
+  - Completed: 2026-03-24 — Comprehensive system prompt covering all 12 sections with strict JSON output format, research-grade requirements, parseGeminiResponse helper. 5 unit tests passing.
 
 - [ ] Task 6: Build the `.ipynb` file constructor — convert Gemini's structured response into valid nbformat v4 JSON (P0)
   - Acceptance: Given structured content, produces a valid `.ipynb` file that opens correctly in Jupyter/Colab with proper cell types (markdown + code), metadata, and kernel spec
