@@ -32,9 +32,10 @@
   - Files: src/lib/notebook-builder.ts
   - Completed: 2026-03-24 — Full notebook builder converting Gemini JSON into nbformat v4 with all 12 sections as properly typed cells. 8 unit tests passing.
 
-- [ ] Task 7: Implement Server-Sent Events (SSE) streaming in the API route to send progress milestones during generation (P1)
+- [x] Task 7: Implement Server-Sent Events (SSE) streaming in the API route to send progress milestones during generation (P1)
   - Acceptance: API route streams events like "Analyzing paper structure...", "Extracting algorithms...", "Generating implementation...", "Building notebook..." as the pipeline progresses. Frontend can connect via EventSource
-  - Files: app/api/generate/route.ts (modify to SSE), lib/progress.ts
+  - Files: src/app/api/generate/route.ts, src/lib/progress.ts
+  - Completed: 2026-03-24 — SSE streaming with 8 progress stages, formatSSEMessage helper, API route refactored to stream events. 5 unit tests passing.
 
 - [ ] Task 8: Build the progress display UI — animated status messages, progress indicator, and engaging waiting experience (P1)
   - Acceptance: During generation, UI shows current stage with animated transitions, a pulsing/typing effect for status text, estimated stage descriptions. Dark theme consistent with rest of app
