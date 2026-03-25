@@ -5,6 +5,7 @@ import Hero from "@/components/hero";
 import ApiKeyInput from "@/components/api-key-input";
 import PdfUpload from "@/components/pdf-upload";
 import ProgressDisplay from "@/components/progress-display";
+import DownloadSection from "@/components/download-section";
 import type { ProgressStage } from "@/lib/progress";
 
 type AppState = "idle" | "generating" | "done" | "error";
@@ -143,12 +144,16 @@ export default function Home() {
         )}
 
         {appState === "done" && notebook && (
-          <div data-testid="download-section" className="w-full max-w-md">
-            {/* Download section will be built in Task 9 */}
-            <p className="text-center text-sm font-mono text-teal">
-              Notebook generated successfully!
-            </p>
-          </div>
+          <DownloadSection
+            notebook={notebook}
+            paperName={paperName}
+            onReset={() => {
+              setAppState("idle");
+              setNotebook(null);
+              setCurrentStage(null);
+              setPdfFile(null);
+            }}
+          />
         )}
       </div>
     </main>
