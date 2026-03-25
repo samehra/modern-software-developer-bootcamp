@@ -12,9 +12,10 @@
   - Files: src/app/page.tsx, src/components/hero.tsx
   - Completed: 2026-03-24 — Hero section with "Powered by Gemini 2.5 Pro" badge, title, tagline, description, and 3-step workflow indicators. 9 Playwright tests passing.
 
-- [ ] Task 3: Build the API key input component with validation and the PDF upload component with drag-and-drop (P0)
+- [x] Task 3: Build the API key input component with validation and the PDF upload component with drag-and-drop (P0)
   - Acceptance: User can enter API key (masked input, stored in React state only), drag-and-drop or click-to-upload PDF (validates file type + max 20MB), both components styled with dark theme
-  - Files: components/api-key-input.tsx, components/pdf-upload.tsx
+  - Files: src/components/api-key-input.tsx, src/components/pdf-upload.tsx, src/app/page.tsx
+  - Completed: 2026-03-24 — API key input with show/hide toggle, PDF upload with drag-and-drop + file type/size validation, Generate button appears when both inputs provided. 15 Playwright tests passing.
 
 - [ ] Task 4: Create the `/api/generate` route handler — accept PDF + API key, initialize Gemini 2.5 Pro client, send PDF as multimodal input (P0)
   - Acceptance: API route receives FormData (PDF file + API key), initializes `@google/generative-ai` client, sends PDF to Gemini 2.5 Pro with a basic prompt, returns Gemini's response as JSON
