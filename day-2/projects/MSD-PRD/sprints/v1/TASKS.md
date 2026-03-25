@@ -17,9 +17,10 @@
   - Files: src/components/api-key-input.tsx, src/components/pdf-upload.tsx, src/app/page.tsx
   - Completed: 2026-03-24 — API key input with show/hide toggle, PDF upload with drag-and-drop + file type/size validation, Generate button appears when both inputs provided. 15 Playwright tests passing.
 
-- [ ] Task 4: Create the `/api/generate` route handler — accept PDF + API key, initialize Gemini 2.5 Pro client, send PDF as multimodal input (P0)
+- [x] Task 4: Create the `/api/generate` route handler — accept PDF + API key, initialize Gemini 2.5 Pro client, send PDF as multimodal input (P0)
   - Acceptance: API route receives FormData (PDF file + API key), initializes `@google/generative-ai` client, sends PDF to Gemini 2.5 Pro with a basic prompt, returns Gemini's response as JSON
-  - Files: app/api/generate/route.ts, lib/gemini.ts
+  - Files: src/app/api/generate/route.ts, src/lib/gemini.ts
+  - Completed: 2026-03-24 — API route with FormData parsing, validation, Gemini 2.5 Pro multimodal call, error handling. 3 unit tests + 15 E2E tests passing.
 
 - [ ] Task 5: Engineer the notebook generation prompt — detailed system prompt that instructs Gemini to output structured notebook content with all 12 sections (P0)
   - Acceptance: Prompt produces structured JSON output from Gemini with: paper metadata, math formulations (LaTeX), algorithm implementations (Python), synthetic data generation, visualizations, ablation studies. Test with a sample paper
