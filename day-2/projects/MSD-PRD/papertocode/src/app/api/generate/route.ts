@@ -100,17 +100,29 @@ export async function POST(request: NextRequest) {
         send("progress", PROGRESS_STAGES[7]);
         send("done", { notebook, paperName: pdfFile.name });
       } catch (error: unknown) {
-        const message =
-          error instanceof Error
-            ? error.message
-            : "An unexpected error occurred";
+        const rawMessage =
+          error instanceof Error ? error.message : String(error);
 
-        if (message.includes("API_KEY_INVALID") || message.includes("401")) {
+        // Log full error server-side for debugging
+        console.error("[PaperToCode] Generation error:", rawMessage);
+
+        // Send only safe, generic messages to client
+        if (rawMessage.includes("API_KEY_INVALID") || rawMessage.includes("401")) {
           send("error", {
             message: "Invalid Gemini API key. Please check and try again.",
           });
+        } else if (rawMessage.includes("429") || rawMessage.includes("RESOURCE_EXHAUSTED")) {
+          send("error", {
+            message: "Gemini API rate limit reached. Please wait a moment and try again.",
+          });
+        } else if (rawMessage.includes("timeout") || rawMessage.includes("DEADLINE_EXCEEDED")) {
+          send("error", {
+            message: "Request timed out. The paper may be too large or complex. Please try again.",
+          });
         } else {
-          send("error", { message });
+          send("error", {
+            message: "Notebook generation failed. Please try again.",
+          });
         }
       } finally {
         controller.close();

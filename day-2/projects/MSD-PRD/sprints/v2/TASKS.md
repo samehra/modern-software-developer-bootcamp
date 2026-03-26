@@ -26,10 +26,11 @@
   - Fixes: SEC-03
   - Completed: 2026-03-25 — systemInstruction separation in Gemini call, sanitizeCodeCell() with 7 dangerous patterns, warning banner prepended to notebooks. 11 sanitizer unit tests + 45 total unit tests passing.
 
-- [ ] Task 5: Remove unused XSS-vulnerable function + sanitize error messages (P0)
+- [x] Task 5: Remove unused XSS-vulnerable function + sanitize error messages (P0)
   - Acceptance: `generateColabHtml()` deleted from colab-link.ts (confirmed unused in download-section.tsx). Error messages in route.ts replaced with generic messages — no raw error.message forwarded to client. Existing colab-link tests updated. Server logs detailed errors to console.
   - Files: src/lib/colab-link.ts, src/app/api/generate/route.ts, tests/unit/colab-link.test.ts
   - Fixes: SEC-04, SEC-09
+  - Completed: 2026-03-25 — Removed generateColabHtml() XSS vector, replaced raw error forwarding with 4 safe generic messages, added console.error server-side logging. 46 unit tests passing.
 
 - [ ] Task 6: Add model selection component — Gemini 2.5 Pro vs Flash (P1)
   - Acceptance: New `ModelSelector` component renders two options: "Pro (Quality)" and "Flash (Speed)" with descriptions. Default is Pro. Selected model passed through to /api/generate as a form field. API route uses the selected model name in the Gemini call. E2E test verifies selector renders and toggles.
