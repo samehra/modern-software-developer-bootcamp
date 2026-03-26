@@ -165,7 +165,7 @@ export default function Home() {
 
       <footer className="mt-auto pt-16 pb-8 text-center">
         <p className="text-xs font-mono text-gray-800">
-          PaperToCode v1 — Your API key never leaves your browser
+          PaperToCode v2 — Your API key is used for processing only, never stored
         </p>
       </footer>
     </main>

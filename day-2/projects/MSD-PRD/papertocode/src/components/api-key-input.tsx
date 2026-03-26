@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { isValidGeminiKeyFormat } from "@/lib/gemini";
 
 interface ApiKeyInputProps {
   value: string;
@@ -9,6 +10,9 @@ interface ApiKeyInputProps {
 
 export default function ApiKeyInput({ value, onChange }: ApiKeyInputProps) {
   const [showKey, setShowKey] = useState(false);
+  const [touched, setTouched] = useState(false);
+
+  const showFormatError = touched && value.length > 0 && !isValidGeminiKeyFormat(value);
 
   return (
     <div className="w-full max-w-md">
@@ -21,8 +25,13 @@ export default function ApiKeyInput({ value, onChange }: ApiKeyInputProps) {
           type={showKey ? "text" : "password"}
           value={value}
           onChange={(e) => onChange(e.target.value)}
+          onBlur={() => setTouched(true)}
           placeholder="Enter your Gemini API key"
-          className="w-full bg-gray-900 border border-gray-800 rounded-lg px-4 py-3 text-sm font-mono text-white placeholder-gray-600 focus:outline-none focus:border-teal transition-colors"
+          className={`w-full bg-gray-900 border rounded-lg px-4 py-3 text-sm font-mono text-white placeholder-gray-600 focus:outline-none transition-colors ${
+            showFormatError
+              ? "border-red-500 focus:border-red-400"
+              : "border-gray-800 focus:border-teal"
+          }`}
         />
         <button
           data-testid="api-key-toggle"
@@ -33,9 +42,15 @@ export default function ApiKeyInput({ value, onChange }: ApiKeyInputProps) {
           {showKey ? "HIDE" : "SHOW"}
         </button>
       </div>
-      <p className="mt-2 text-xs font-mono text-gray-600">
-        Your key stays in your browser. Never sent to our servers.
-      </p>
+      {showFormatError ? (
+        <p data-testid="api-key-format-error" className="mt-2 text-xs font-mono text-red-400">
+          Invalid format. Gemini keys start with &quot;AIza&quot; and are 39 characters.
+        </p>
+      ) : (
+        <p className="mt-2 text-xs font-mono text-gray-600">
+          Your key is sent securely to our server for processing. Never stored or logged.
+        </p>
+      )}
     </div>
   );
 }

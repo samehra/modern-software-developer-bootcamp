@@ -8,10 +8,11 @@
   - Fixes: SEC-05
   - Completed: 2026-03-25 — Added 6 security headers in next.config.ts. CSP includes self + Google Fonts + Gemini API. 7 E2E tests passing, 32 total tests passing.
 
-- [ ] Task 2: Fix API key privacy claim and add Gemini key format validation (P0)
+- [x] Task 2: Fix API key privacy claim and add Gemini key format validation (P0)
   - Acceptance: Privacy message updated to "Your key is sent securely to our server for processing. Never stored or logged." API key validation rejects keys not matching Gemini format (`AIza` prefix, 39 chars). Unit tests for the new validation. Frontend shows inline error for malformed keys before submission.
   - Files: src/components/api-key-input.tsx, src/lib/gemini.ts, tests/unit/gemini.test.ts
   - Fixes: SEC-01, SEC-07
+  - Completed: 2026-03-25 — Added isValidGeminiKeyFormat() with /^AIza[0-9A-Za-z_-]{35}$/ regex, updated privacy message, added inline format error on blur, updated footer to v2. 8 unit tests + 32 E2E passing.
 
 - [ ] Task 3: Add rate limiting middleware to /api/generate (P0)
   - Acceptance: In-memory token bucket rate limiter (5 requests per minute per IP). 6th request within 60s returns `429 Too Many Requests` JSON response. Rate limiter resets after window expires. Unit tests for the limiter logic.

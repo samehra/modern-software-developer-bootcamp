@@ -91,7 +91,7 @@ test.describe("Task 10: End-to-End Integration", () => {
 
     const footer = page.locator("footer");
     await expect(footer).toBeVisible();
-    await expect(footer).toContainText("PaperToCode v1");
+    await expect(footer).toContainText("PaperToCode v2");
   });
 
   test("no console errors on page load", async ({ page }) => {

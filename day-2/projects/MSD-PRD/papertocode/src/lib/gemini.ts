@@ -1,7 +1,13 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
+const GEMINI_KEY_PATTERN = /^AIza[0-9A-Za-z_-]{35}$/;
+
 export function validateApiKey(key: string): boolean {
   return key.trim().length > 0;
+}
+
+export function isValidGeminiKeyFormat(key: string): boolean {
+  return GEMINI_KEY_PATTERN.test(key.trim());
 }
 
 export function createGeminiClient(apiKey: string) {
