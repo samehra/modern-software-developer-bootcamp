@@ -20,10 +20,11 @@
   - Fixes: SEC-02, SEC-08
   - Completed: 2026-03-25 — RateLimiter class with sliding window, 5 req/min per IP, Retry-After header, integrated into API route. 5 unit tests passing.
 
-- [ ] Task 4: Defend against prompt injection — use systemInstruction + code cell sanitizer (P0)
+- [x] Task 4: Defend against prompt injection — use systemInstruction + code cell sanitizer (P0)
   - Acceptance: Gemini call uses `systemInstruction` parameter (not inline text). New `sanitizeNotebook()` function scans code cells for dangerous patterns (os.system, subprocess, eval, exec, __import__, shutil.rmtree) and adds a `# WARNING` comment above flagged lines. A warning markdown cell is prepended to every notebook. Unit tests for sanitizer with malicious code samples.
   - Files: src/lib/gemini.ts, src/lib/sanitizer.ts, src/lib/notebook-builder.ts, tests/unit/sanitizer.test.ts
   - Fixes: SEC-03
+  - Completed: 2026-03-25 — systemInstruction separation in Gemini call, sanitizeCodeCell() with 7 dangerous patterns, warning banner prepended to notebooks. 11 sanitizer unit tests + 45 total unit tests passing.
 
 - [ ] Task 5: Remove unused XSS-vulnerable function + sanitize error messages (P0)
   - Acceptance: `generateColabHtml()` deleted from colab-link.ts (confirmed unused in download-section.tsx). Error messages in route.ts replaced with generic messages — no raw error.message forwarded to client. Existing colab-link tests updated. Server logs detailed errors to console.

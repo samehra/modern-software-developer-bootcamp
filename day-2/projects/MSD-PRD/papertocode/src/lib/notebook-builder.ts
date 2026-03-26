@@ -1,4 +1,5 @@
 import { parseGeminiResponse } from "./prompts";
+import { sanitizeCodeCell, NOTEBOOK_WARNING_CELL } from "./sanitizer";
 
 interface NotebookCell {
   cell_type: "markdown" | "code";
@@ -13,10 +14,12 @@ function md(lines: string[]): NotebookCell {
 }
 
 function code(lines: string[]): NotebookCell {
+  const raw = lines.join("");
+  const { sanitized } = sanitizeCodeCell(raw);
   return {
     cell_type: "code",
     metadata: {},
-    source: lines,
+    source: splitLines(sanitized),
     outputs: [],
     execution_count: null,
   };
@@ -31,6 +34,9 @@ function splitLines(text: string): string[] {
 export function buildNotebook(rawContent: string): Record<string, unknown> {
   const data = parseGeminiResponse(rawContent) as Record<string, unknown>;
   const cells: NotebookCell[] = [];
+
+  // --- Warning banner ---
+  cells.push(md(NOTEBOOK_WARNING_CELL));
 
   // --- 1. Title & Paper Metadata ---
   const meta = data.paper_metadata as Record<string, unknown> | undefined;

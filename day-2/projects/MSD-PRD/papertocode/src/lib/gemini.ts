@@ -23,7 +23,10 @@ export async function generateNotebookContent(
   systemPrompt: string
 ): Promise<string> {
   const genAI = createGeminiClient(apiKey);
-  const model = genAI.getGenerativeModel({ model: "gemini-2.5-pro" });
+  const model = genAI.getGenerativeModel({
+    model: "gemini-2.5-pro",
+    systemInstruction: systemPrompt,
+  });
 
   const pdfPart = {
     inlineData: {
@@ -33,7 +36,7 @@ export async function generateNotebookContent(
   };
 
   const result = await model.generateContent([
-    { text: systemPrompt },
+    { text: "Analyze this research paper and generate a comprehensive notebook implementation as specified." },
     pdfPart,
   ]);
 
