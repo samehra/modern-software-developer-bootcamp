@@ -3,10 +3,29 @@ import { validateApiKey, generateNotebookContent } from "@/lib/gemini";
 import { NOTEBOOK_SYSTEM_PROMPT } from "@/lib/prompts";
 import { buildNotebook } from "@/lib/notebook-builder";
 import { PROGRESS_STAGES, formatSSEMessage } from "@/lib/progress";
+import { apiRateLimiter } from "@/lib/rate-limiter";
 
 const MAX_FILE_SIZE = 20 * 1024 * 1024; // 20MB
 
 export async function POST(request: NextRequest) {
+  // Rate limiting
+  const ip =
+    request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+    request.headers.get("x-real-ip") ||
+    "unknown";
+  const rateResult = apiRateLimiter.check(ip);
+  if (!rateResult.allowed) {
+    return NextResponse.json(
+      { error: "Too many requests. Please try again later." },
+      {
+        status: 429,
+        headers: {
+          "Retry-After": String(Math.ceil(rateResult.retryAfterMs / 1000)),
+        },
+      }
+    );
+  }
+
   const formData = await request.formData();
   const apiKey = formData.get("apiKey") as string | null;
   const pdfFile = formData.get("pdf") as File | null;

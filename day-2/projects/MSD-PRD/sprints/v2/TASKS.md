@@ -14,10 +14,11 @@
   - Fixes: SEC-01, SEC-07
   - Completed: 2026-03-25 — Added isValidGeminiKeyFormat() with /^AIza[0-9A-Za-z_-]{35}$/ regex, updated privacy message, added inline format error on blur, updated footer to v2. 8 unit tests + 32 E2E passing.
 
-- [ ] Task 3: Add rate limiting middleware to /api/generate (P0)
+- [x] Task 3: Add rate limiting middleware to /api/generate (P0)
   - Acceptance: In-memory token bucket rate limiter (5 requests per minute per IP). 6th request within 60s returns `429 Too Many Requests` JSON response. Rate limiter resets after window expires. Unit tests for the limiter logic.
   - Files: src/lib/rate-limiter.ts, src/app/api/generate/route.ts, tests/unit/rate-limiter.test.ts
   - Fixes: SEC-02, SEC-08
+  - Completed: 2026-03-25 — RateLimiter class with sliding window, 5 req/min per IP, Retry-After header, integrated into API route. 5 unit tests passing.
 
 - [ ] Task 4: Defend against prompt injection — use systemInstruction + code cell sanitizer (P0)
   - Acceptance: Gemini call uses `systemInstruction` parameter (not inline text). New `sanitizeNotebook()` function scans code cells for dangerous patterns (os.system, subprocess, eval, exec, __import__, shutil.rmtree) and adds a `# WARNING` comment above flagged lines. A warning markdown cell is prepended to every notebook. Unit tests for sanitizer with malicious code samples.
