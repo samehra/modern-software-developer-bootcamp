@@ -42,10 +42,11 @@
   - Files: src/components/pdf-preview.tsx, src/components/pdf-upload.tsx, tests/e2e/pdf-preview.spec.ts, package.json (add pdfjs-dist)
   - Completed: 2026-03-25 — PdfPreview component with canvas rendering via pdfjs-dist, graceful fallback on error, page count display. 2 E2E tests passing.
 
-- [ ] Task 8: Add Zod schema validation on Gemini JSON output (P1)
+- [x] Task 8: Add Zod schema validation on Gemini JSON output (P1)
   - Acceptance: Zod schema defines the expected structure of Gemini's 12-section response. `parseGeminiResponse()` validates against schema after JSON.parse. On validation failure, returns a descriptive error ("Missing required field: implementation") instead of crashing. Unit tests with valid, partial, and malformed responses.
   - Files: src/lib/schema.ts, src/lib/prompts.ts, tests/unit/schema.test.ts
   - Fixes: SEC-11
+  - Completed: 2026-03-25 — Zod v4 schema for all 12 sections (paper_metadata required, rest optional), integrated into parseGeminiResponse(), 6 schema tests + 53 total unit tests passing.
 
 - [ ] Task 9: Add retry logic for Gemini API failures (P1)
   - Acceptance: `generateNotebookContent()` retries up to 2 times on timeout or 5xx errors with exponential backoff (2s, then 4s). Non-retryable errors (401, 403, 400) fail immediately. Progress display shows "Retrying..." message on retry. Unit tests mock failure scenarios.

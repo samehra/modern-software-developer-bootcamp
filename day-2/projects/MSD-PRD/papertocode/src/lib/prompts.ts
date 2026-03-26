@@ -1,3 +1,5 @@
+import { validateGeminiOutput } from "./schema";
+
 export const NOTEBOOK_SYSTEM_PROMPT = `You are an expert ML research engineer at a top AI lab. Your task is to analyze a research paper PDF and produce a structured JSON object that will be used to generate a comprehensive Google Colab notebook for replicating the paper's methodology.
 
 The notebook must be research-grade — suitable for researchers at OpenAI, DeepMind, or Google Brain to accelerate paper replication. Do NOT produce toy examples. Use realistic synthetic data with proper distributions, dimensionality, and noise characteristics that mirror what the paper describes.
@@ -102,5 +104,12 @@ export function parseGeminiResponse(raw: string): Record<string, unknown> {
     cleaned = cleaned.replace(/^```(?:json)?\s*\n?/, "").replace(/\n?```\s*$/, "");
   }
 
-  return JSON.parse(cleaned);
+  const parsed = JSON.parse(cleaned);
+
+  const validation = validateGeminiOutput(parsed);
+  if (!validation.success) {
+    throw new Error(`Invalid Gemini response structure: ${validation.error}`);
+  }
+
+  return parsed;
 }
