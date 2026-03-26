@@ -37,9 +37,10 @@
   - Files: src/components/model-selector.tsx, src/app/page.tsx, src/app/api/generate/route.ts, src/lib/gemini.ts, tests/e2e/model-selector.spec.ts
   - Completed: 2026-03-25 — ModelSelector with Pro/Flash toggle, model param in FormData, API route whitelist validation, gemini.ts accepts modelName. 3 E2E tests passing.
 
-- [ ] Task 7: Add PDF preview after upload (P1)
+- [x] Task 7: Add PDF preview after upload (P1)
   - Acceptance: After PDF upload, a thumbnail of the first page renders below the upload zone using pdfjs-dist (canvas rendering). Preview is ~200px wide with a subtle border. If PDF rendering fails, show a graceful fallback (filename + page count text). E2E test verifies preview appears after upload.
   - Files: src/components/pdf-preview.tsx, src/components/pdf-upload.tsx, tests/e2e/pdf-preview.spec.ts, package.json (add pdfjs-dist)
+  - Completed: 2026-03-25 — PdfPreview component with canvas rendering via pdfjs-dist, graceful fallback on error, page count display. 2 E2E tests passing.
 
 - [ ] Task 8: Add Zod schema validation on Gemini JSON output (P1)
   - Acceptance: Zod schema defines the expected structure of Gemini's 12-section response. `parseGeminiResponse()` validates against schema after JSON.parse. On validation failure, returns a descriptive error ("Missing required field: implementation") instead of crashing. Unit tests with valid, partial, and malformed responses.
