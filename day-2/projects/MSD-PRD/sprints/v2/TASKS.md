@@ -48,9 +48,10 @@
   - Fixes: SEC-11
   - Completed: 2026-03-25 — Zod v4 schema for all 12 sections (paper_metadata required, rest optional), integrated into parseGeminiResponse(), 6 schema tests + 53 total unit tests passing.
 
-- [ ] Task 9: Add retry logic for Gemini API failures (P1)
+- [x] Task 9: Add retry logic for Gemini API failures (P1)
   - Acceptance: `generateNotebookContent()` retries up to 2 times on timeout or 5xx errors with exponential backoff (2s, then 4s). Non-retryable errors (401, 403, 400) fail immediately. Progress display shows "Retrying..." message on retry. Unit tests mock failure scenarios.
-  - Files: src/lib/gemini.ts, src/lib/progress.ts, src/app/api/generate/route.ts, tests/unit/gemini.test.ts
+  - Files: src/lib/retry.ts, src/app/api/generate/route.ts, tests/unit/retry.test.ts
+  - Completed: 2026-03-25 — withRetry() utility with exponential backoff, isRetryableError() classifier, integrated into API route with "Retrying..." SSE events. 13 unit tests + 66 total passing.
 
 - [ ] Task 10: E2E integration tests for v2 security and features (P2)
   - Acceptance: New Playwright tests covering: (1) rate limit error shown after rapid requests, (2) model selector integrated in full flow, (3) PDF preview visible in full flow, (4) malformed API key rejected before submission, (5) security headers present in response. All existing v1 tests still pass. Screenshots taken at key steps.

@@ -4,6 +4,7 @@ import { NOTEBOOK_SYSTEM_PROMPT } from "@/lib/prompts";
 import { buildNotebook } from "@/lib/notebook-builder";
 import { PROGRESS_STAGES, formatSSEMessage } from "@/lib/progress";
 import { apiRateLimiter } from "@/lib/rate-limiter";
+import { withRetry } from "@/lib/retry";
 
 const MAX_FILE_SIZE = 20 * 1024 * 1024; // 20MB
 
@@ -82,11 +83,19 @@ export async function POST(request: NextRequest) {
 
         // Stage 4: Generating code (this is where Gemini does most of the work)
         send("progress", PROGRESS_STAGES[3]);
-        const rawContent = await generateNotebookContent(
-          apiKey,
-          pdfBuffer,
-          NOTEBOOK_SYSTEM_PROMPT,
-          modelName
+        const rawContent = await withRetry(
+          () => generateNotebookContent(apiKey, pdfBuffer, NOTEBOOK_SYSTEM_PROMPT, modelName),
+          {
+            maxRetries: 2,
+            baseDelayMs: 2000,
+            onRetry: (attempt) => {
+              send("progress", {
+                ...PROGRESS_STAGES[3],
+                label: `Retrying... (attempt ${attempt + 1})`,
+                description: "The API request failed. Retrying with exponential backoff...",
+              });
+            },
+          }
         );
 
         // Stage 5: Synthetic data
