@@ -20,11 +20,12 @@ export function createGeminiClient(apiKey: string) {
 export async function generateNotebookContent(
   apiKey: string,
   pdfBuffer: ArrayBuffer,
-  systemPrompt: string
+  systemPrompt: string,
+  modelName: string = "gemini-2.5-pro"
 ): Promise<string> {
   const genAI = createGeminiClient(apiKey);
   const model = genAI.getGenerativeModel({
-    model: "gemini-2.5-pro",
+    model: modelName,
     systemInstruction: systemPrompt,
   });
 

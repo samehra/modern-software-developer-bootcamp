@@ -32,9 +32,10 @@
   - Fixes: SEC-04, SEC-09
   - Completed: 2026-03-25 — Removed generateColabHtml() XSS vector, replaced raw error forwarding with 4 safe generic messages, added console.error server-side logging. 46 unit tests passing.
 
-- [ ] Task 6: Add model selection component — Gemini 2.5 Pro vs Flash (P1)
+- [x] Task 6: Add model selection component — Gemini 2.5 Pro vs Flash (P1)
   - Acceptance: New `ModelSelector` component renders two options: "Pro (Quality)" and "Flash (Speed)" with descriptions. Default is Pro. Selected model passed through to /api/generate as a form field. API route uses the selected model name in the Gemini call. E2E test verifies selector renders and toggles.
   - Files: src/components/model-selector.tsx, src/app/page.tsx, src/app/api/generate/route.ts, src/lib/gemini.ts, tests/e2e/model-selector.spec.ts
+  - Completed: 2026-03-25 — ModelSelector with Pro/Flash toggle, model param in FormData, API route whitelist validation, gemini.ts accepts modelName. 3 E2E tests passing.
 
 - [ ] Task 7: Add PDF preview after upload (P1)
   - Acceptance: After PDF upload, a thumbnail of the first page renders below the upload zone using pdfjs-dist (canvas rendering). Preview is ~200px wide with a subtle border. If PDF rendering fails, show a graceful fallback (filename + page count text). E2E test verifies preview appears after upload.

@@ -29,6 +29,8 @@ export async function POST(request: NextRequest) {
   const formData = await request.formData();
   const apiKey = formData.get("apiKey") as string | null;
   const pdfFile = formData.get("pdf") as File | null;
+  const modelParam = formData.get("model") as string | null;
+  const modelName = modelParam === "gemini-2.5-flash" ? "gemini-2.5-flash" : "gemini-2.5-pro";
 
   // Validation — return regular JSON errors for bad input
   if (!apiKey || !validateApiKey(apiKey)) {
@@ -83,7 +85,8 @@ export async function POST(request: NextRequest) {
         const rawContent = await generateNotebookContent(
           apiKey,
           pdfBuffer,
-          NOTEBOOK_SYSTEM_PROMPT
+          NOTEBOOK_SYSTEM_PROMPT,
+          modelName
         );
 
         // Stage 5: Synthetic data

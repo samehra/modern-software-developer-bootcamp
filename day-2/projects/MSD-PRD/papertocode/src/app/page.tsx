@@ -4,15 +4,18 @@ import { useState, useCallback } from "react";
 import Hero from "@/components/hero";
 import ApiKeyInput from "@/components/api-key-input";
 import PdfUpload from "@/components/pdf-upload";
+import ModelSelector from "@/components/model-selector";
 import ProgressDisplay from "@/components/progress-display";
 import DownloadSection from "@/components/download-section";
 import type { ProgressStage } from "@/lib/progress";
+import type { GeminiModel } from "@/components/model-selector";
 
 type AppState = "idle" | "generating" | "done" | "error";
 
 export default function Home() {
   const [apiKey, setApiKey] = useState("");
   const [pdfFile, setPdfFile] = useState<File | null>(null);
+  const [model, setModel] = useState<GeminiModel>("gemini-2.5-pro");
   const [appState, setAppState] = useState<AppState>("idle");
   const [currentStage, setCurrentStage] = useState<ProgressStage | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -29,6 +32,7 @@ export default function Home() {
     const formData = new FormData();
     formData.append("apiKey", apiKey);
     formData.append("pdf", pdfFile);
+    formData.append("model", model);
 
     try {
       const response = await fetch("/api/generate", {
@@ -92,7 +96,7 @@ export default function Home() {
       setError(err instanceof Error ? err.message : "Network error");
       setAppState("error");
     }
-  }, [apiKey, pdfFile]);
+  }, [apiKey, pdfFile, model]);
 
   const isGenerating = appState === "generating";
 
@@ -107,6 +111,12 @@ export default function Home() {
         {appState !== "generating" && appState !== "done" && (
           <div className="w-full flex flex-col items-center gap-8 animate-fade-in">
             <ApiKeyInput value={apiKey} onChange={setApiKey} />
+
+            {apiKey.length > 0 && (
+              <div className="w-full animate-fade-in">
+                <ModelSelector value={model} onChange={setModel} />
+              </div>
+            )}
 
             {apiKey.length > 0 && (
               <div className="w-full animate-fade-in">
