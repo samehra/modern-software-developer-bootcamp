@@ -1,6 +1,6 @@
 # Sprint v2 — Tasks: PaperToCode
 
-## Status: In Progress
+## Status: Complete
 
 - [x] Task 1: Add security headers in next.config.ts (P0)
   - Acceptance: All 6 security headers present in every response. Verify with `curl -I http://localhost:3000` — headers include X-Content-Type-Options, X-Frame-Options, Referrer-Policy, Permissions-Policy, X-DNS-Prefetch-Control, Content-Security-Policy. App still renders correctly (CSP doesn't block fonts or styles).
@@ -53,6 +53,7 @@
   - Files: src/lib/retry.ts, src/app/api/generate/route.ts, tests/unit/retry.test.ts
   - Completed: 2026-03-25 — withRetry() utility with exponential backoff, isRetryableError() classifier, integrated into API route with "Retrying..." SSE events. 13 unit tests + 66 total passing.
 
-- [ ] Task 10: E2E integration tests for v2 security and features (P2)
+- [x] Task 10: E2E integration tests for v2 security and features (P2)
   - Acceptance: New Playwright tests covering: (1) rate limit error shown after rapid requests, (2) model selector integrated in full flow, (3) PDF preview visible in full flow, (4) malformed API key rejected before submission, (5) security headers present in response. All existing v1 tests still pass. Screenshots taken at key steps.
-  - Files: tests/e2e/security.spec.ts, tests/e2e/v2-integration.spec.ts
+  - Files: tests/e2e/v2-integration.spec.ts
+  - Completed: 2026-03-25 — 5 E2E integration tests: full v2 flow, malformed key error, security headers check, mobile layout, regression check. 66 unit + 42 E2E = 108 total tests.
