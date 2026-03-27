@@ -1,0 +1,13 @@
+#!/bin/sh
+# Pre-commit hook: block real Gemini API keys from being committed.
+# A real key matches: AIzaSy followed by 33 alphanumeric/dash/underscore chars.
+#
+# Setup: git config core.hooksPath .githooks
+
+if git diff --cached --diff-filter=ACM -z -- '*.ts' '*.tsx' '*.js' '*.jsx' '*.json' '*.yml' '*.yaml' '*.env*' | \
+   xargs -0 grep -Pn 'AIzaSy[A-Za-z0-9_-]{33}' 2>/dev/null; then
+  echo ""
+  echo "ERROR: Staged files contain what looks like a real Gemini API key."
+  echo "Remove the key and try again."
+  exit 1
+fi

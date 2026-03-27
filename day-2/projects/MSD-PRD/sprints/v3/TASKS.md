@@ -52,6 +52,7 @@
   - Files: .github/workflows/cd.yml
   - Completed: 2026-03-26 — Created cd.yml: triggers on CI workflow_run success on main, configures AWS creds from secrets, ECR login, Docker build+push with SHA tag + latest, downloads current task definition, renders new image, deploys to ECS with wait-for-service-stability.
 
-- [ ] Task 11: Audit — ensure GEMINI_API_KEY never leaks to GitHub (P0)
+- [x] Task 11: Audit — ensure GEMINI_API_KEY never leaks to GitHub (P0)
   - Acceptance: (1) `.gitignore` excludes `.env` and `.env.local`, (2) `.dockerignore` excludes `.env` and `.env.*`, (3) No real API key (AIza...) hardcoded in any source or test file — only fake placeholder keys in tests, (4) `.env.example` contains only commented-out placeholder `# GEMINI_API_KEY=AIza...`, (5) `quality.spec.ts` reads key from `process.env.GEMINI_API_KEY` only, (6) CI workflow does not set or expose `GEMINI_API_KEY`, (7) Add a `pre-commit` grep guard script or document in README that real keys must never be committed. Verify: `grep -r 'AIzaSy[A-Za-z0-9_-]\{30\}' src/` returns zero matches.
   - Files: .gitignore, .dockerignore, .env.example, tests/e2e/quality.spec.ts
+  - Completed: 2026-03-26 — All 7 checks pass: (1) .gitignore excludes .env/.env.local, (2) .dockerignore excludes .env/.env.*, (3) zero real keys in src/, (4) .env.example has only commented placeholder, (5) quality.spec.ts reads from process.env only, (6) CI/CD workflows don't set GEMINI_API_KEY, (7) added .githooks/pre-commit script that blocks commits containing real Gemini API keys (AIzaSy pattern). Setup: `git config core.hooksPath .githooks`.
