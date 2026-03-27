@@ -7,9 +7,10 @@
   - Files: papertocode/vitest.config.ts, papertocode/package.json, .env.example
   - Completed: 2026-03-26 — Created vitest.config.ts with v8 coverage and @ alias, added test/test:coverage/test:e2e/test:quality scripts to package.json, created .env.example with AWS + optional Gemini key placeholders, pushed to samehra/modern-software-developer-bootcamp. 66 unit tests passing, semgrep clean, yarn audit clean.
 
-- [ ] Task 2: Expand unit tests — gemini.ts, rate-limiter.ts, colab-link.ts, progress.ts (P0)
+- [x] Task 2: Expand unit tests — gemini.ts, rate-limiter.ts, colab-link.ts, progress.ts (P0)
   - Acceptance: Add edge-case unit tests: gemini.ts — error handling for generateNotebookContent (missing key, invalid buffer), createGeminiClient edge cases. rate-limiter.ts — concurrent IPs, window boundary timing, 0-request limit. colab-link.ts — special characters in filenames, empty notebook. progress.ts — all stages have required fields, formatSSEMessage with special characters. Target: 15+ new unit tests. All pass with `yarn test`.
   - Files: tests/unit/gemini.test.ts, tests/unit/rate-limiter.test.ts, tests/unit/colab-link.test.ts, tests/unit/progress.test.ts
+  - Completed: 2026-03-26 — Added 25 new edge-case tests: gemini (5 new: whitespace key, non-key client, weak validation), rate-limiter (5 new: remaining decrement, blocked state, many IPs, maxRequests=1, retryAfterMs decay), colab-link (6 new: empty notebook, unicode, no .pdf ext, uppercase .PDF, special chars, empty/dot-pdf filenames), progress (8 new: exact count, ascending order, unique ids, first/last percent, SSE format parsing, special chars, null data). Total: 91 unit tests passing.
 
 - [ ] Task 3: Expand unit tests — sanitizer.ts, retry.ts, schema.ts, notebook-builder.ts, prompts.ts (P0)
   - Acceptance: Add edge-case unit tests: sanitizer.ts — multi-line dangerous code, nested patterns, empty input. retry.ts — non-Error throws, zero retries, baseDelay=0. schema.ts — extra fields passthrough, deeply nested invalid data. notebook-builder.ts — empty sections array, missing optional fields, very long content. prompts.ts — malformed JSON edge cases (truncated, unicode, nested fences). Target: 15+ new unit tests. All pass with `yarn test`.

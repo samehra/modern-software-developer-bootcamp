@@ -37,8 +37,6 @@ describe("RateLimiter", () => {
     shortLimiter.check("127.0.0.1");
     expect(shortLimiter.check("127.0.0.1").allowed).toBe(false);
 
-    // Simulate time passing by manipulating the internal state
-    // We test the reset by creating a new window
     return new Promise<void>((resolve) => {
       setTimeout(() => {
         expect(shortLimiter.check("127.0.0.1").allowed).toBe(true);
@@ -50,5 +48,51 @@ describe("RateLimiter", () => {
   it("returns remaining count", () => {
     const result = limiter.check("127.0.0.1");
     expect(result.remaining).toBe(4);
+  });
+
+  it("remaining decrements correctly on each request", () => {
+    expect(limiter.check("1.1.1.1").remaining).toBe(4);
+    expect(limiter.check("1.1.1.1").remaining).toBe(3);
+    expect(limiter.check("1.1.1.1").remaining).toBe(2);
+    expect(limiter.check("1.1.1.1").remaining).toBe(1);
+    expect(limiter.check("1.1.1.1").remaining).toBe(0);
+  });
+
+  it("returns remaining=0 and retryAfterMs>0 when blocked", () => {
+    for (let i = 0; i < 5; i++) limiter.check("2.2.2.2");
+    const result = limiter.check("2.2.2.2");
+    expect(result.remaining).toBe(0);
+    expect(result.retryAfterMs).toBeGreaterThan(0);
+    expect(result.retryAfterMs).toBeLessThanOrEqual(60_000);
+  });
+
+  it("handles many different IPs without interference", () => {
+    for (let i = 0; i < 100; i++) {
+      expect(limiter.check(`192.168.0.${i}`).allowed).toBe(true);
+    }
+    // First IP still has 4 remaining
+    expect(limiter.check("192.168.0.0").remaining).toBe(3);
+  });
+
+  it("works with maxRequests=1 (single request allowed)", () => {
+    const strict = new RateLimiter({ maxRequests: 1, windowMs: 60_000 });
+    expect(strict.check("5.5.5.5").allowed).toBe(true);
+    expect(strict.check("5.5.5.5").allowed).toBe(false);
+  });
+
+  it("retryAfterMs decreases over time within window", () => {
+    const shortLimiter = new RateLimiter({ maxRequests: 1, windowMs: 200 });
+    shortLimiter.check("6.6.6.6");
+    const first = shortLimiter.check("6.6.6.6");
+    expect(first.allowed).toBe(false);
+
+    return new Promise<void>((resolve) => {
+      setTimeout(() => {
+        const second = shortLimiter.check("6.6.6.6");
+        expect(second.allowed).toBe(false);
+        expect(second.retryAfterMs).toBeLessThan(first.retryAfterMs);
+        resolve();
+      }, 50);
+    });
   });
 });

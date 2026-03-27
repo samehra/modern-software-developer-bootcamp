@@ -28,4 +28,40 @@ describe("Colab Link Utilities", () => {
     expect(exports).toContain("generateDownloadBlob");
     expect(exports).toContain("getDownloadFilename");
   });
+
+  it("handles empty notebook object", () => {
+    const content = colabLink.generateDownloadBlob({});
+    expect(JSON.parse(content)).toEqual({});
+  });
+
+  it("preserves unicode in notebook content", () => {
+    const nb = { title: "Attention \u2014 Is All You Need", cells: [] };
+    const content = colabLink.generateDownloadBlob(nb);
+    expect(content).toContain("Attention");
+    expect(JSON.parse(content).title).toBe("Attention \u2014 Is All You Need");
+  });
+
+  it("handles filename without .pdf extension", () => {
+    expect(colabLink.getDownloadFilename("paper")).toBe("paper_notebook.ipynb");
+  });
+
+  it("handles filename with uppercase .PDF extension", () => {
+    expect(colabLink.getDownloadFilename("paper.PDF")).toBe("paper_notebook.ipynb");
+  });
+
+  it("handles filename with special characters", () => {
+    const result = colabLink.getDownloadFilename("paper@v2!final#1.pdf");
+    expect(result).toBe("paper_v2_final_1_notebook.ipynb");
+    expect(result).not.toContain("@");
+    expect(result).not.toContain("!");
+    expect(result).not.toContain("#");
+  });
+
+  it("handles empty string filename", () => {
+    expect(colabLink.getDownloadFilename("")).toBe("_notebook.ipynb");
+  });
+
+  it("handles filename that is just .pdf", () => {
+    expect(colabLink.getDownloadFilename(".pdf")).toBe("_notebook.ipynb");
+  });
 });

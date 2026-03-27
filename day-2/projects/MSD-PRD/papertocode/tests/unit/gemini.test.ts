@@ -14,10 +14,24 @@ describe("Gemini Client", () => {
     expect(() => createGeminiClient("")).toThrow("API key is required");
   });
 
+  it("throws on whitespace-only API key", () => {
+    expect(() => createGeminiClient("   ")).toThrow("API key is required");
+  });
+
+  it("creates client with any non-empty string (weak validation)", () => {
+    const client = createGeminiClient("not-a-real-key");
+    expect(client).toBeDefined();
+  });
+
   it("validates non-empty keys", () => {
     expect(validateApiKey("")).toBe(false);
     expect(validateApiKey("   ")).toBe(false);
     expect(validateApiKey(VALID_KEY)).toBe(true);
+  });
+
+  it("validateApiKey accepts any non-empty trimmed string", () => {
+    expect(validateApiKey("x")).toBe(true);
+    expect(validateApiKey("  a  ")).toBe(true);
   });
 });
 
@@ -46,5 +60,20 @@ describe("Gemini Key Format Validation", () => {
 
   it("accepts keys with hyphens and underscores", () => {
     expect(isValidGeminiKeyFormat("AIza_yA1234567890123456789012345-789abc")).toBe(true);
+  });
+
+  it("trims leading/trailing whitespace before validating", () => {
+    expect(isValidGeminiKeyFormat("  AIzaSyA12345678901234567890123456789abc  ")).toBe(true);
+  });
+
+  it("rejects keys with special characters beyond allowed set", () => {
+    expect(isValidGeminiKeyFormat("AIza!yA1234567890123456789012345789abc")).toBe(false);
+    expect(isValidGeminiKeyFormat("AIza.yA1234567890123456789012345789abc")).toBe(false);
+    expect(isValidGeminiKeyFormat("AIza yA1234567890123456789012345789abc")).toBe(false);
+  });
+
+  it("is case-sensitive for AIza prefix", () => {
+    expect(isValidGeminiKeyFormat("aiza12345678901234567890123456789012345")).toBe(false);
+    expect(isValidGeminiKeyFormat("AIZA12345678901234567890123456789012345")).toBe(false);
   });
 });
