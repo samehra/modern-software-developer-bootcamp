@@ -72,4 +72,47 @@ y = 2`;
     expect(Array.isArray(DANGEROUS_PATTERNS)).toBe(true);
     expect(DANGEROUS_PATTERNS.length).toBeGreaterThan(0);
   });
+
+  it("handles empty string input", () => {
+    const result = sanitizeCodeCell("");
+    expect(result.flagged).toBe(false);
+    expect(result.sanitized).toBe("");
+    expect(result.warnings).toHaveLength(0);
+  });
+
+  it("flags multiple dangerous patterns in one block", () => {
+    const code = `os.system("whoami")
+eval("2+2")
+subprocess.run(["ls"])`;
+    const result = sanitizeCodeCell(code);
+    expect(result.flagged).toBe(true);
+    expect(result.warnings.length).toBe(3);
+    const warningCount = (result.sanitized.match(/# WARNING/g) || []).length;
+    expect(warningCount).toBe(3);
+  });
+
+  it("preserves non-dangerous lines exactly", () => {
+    const code = `import numpy as np
+x = np.array([1, 2, 3])
+os.system("bad")
+print(x)`;
+    const result = sanitizeCodeCell(code);
+    const lines = result.sanitized.split("\n");
+    expect(lines[0]).toBe("import numpy as np");
+    expect(lines[1]).toBe("x = np.array([1, 2, 3])");
+    // line 2 is WARNING, line 3 is os.system, line 4 is print
+    expect(lines[lines.length - 1]).toBe("print(x)");
+  });
+
+  it("each DANGEROUS_PATTERNS entry has pattern and label", () => {
+    for (const dp of DANGEROUS_PATTERNS) {
+      expect(dp.pattern).toBeInstanceOf(RegExp);
+      expect(typeof dp.label).toBe("string");
+      expect(dp.label.length).toBeGreaterThan(0);
+    }
+  });
+
+  it("has exactly 7 dangerous patterns", () => {
+    expect(DANGEROUS_PATTERNS.length).toBe(7);
+  });
 });

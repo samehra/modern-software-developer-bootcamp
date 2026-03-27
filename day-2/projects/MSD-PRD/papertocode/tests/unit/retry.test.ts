@@ -84,4 +84,54 @@ describe("isRetryableError", () => {
   it("returns false for 403 errors", () => {
     expect(isRetryableError(new Error("403 Forbidden"))).toBe(false);
   });
+
+  it("returns true for UNAVAILABLE errors", () => {
+    expect(isRetryableError(new Error("UNAVAILABLE"))).toBe(true);
+  });
+
+  it("returns true for ECONNRESET errors", () => {
+    expect(isRetryableError(new Error("ECONNRESET"))).toBe(true);
+  });
+
+  it("returns true for ENOTFOUND errors", () => {
+    expect(isRetryableError(new Error("ENOTFOUND"))).toBe(true);
+  });
+
+  it("returns false for API_KEY_INVALID errors", () => {
+    expect(isRetryableError(new Error("API_KEY_INVALID"))).toBe(false);
+  });
+
+  it("returns false for PERMISSION_DENIED errors", () => {
+    expect(isRetryableError(new Error("PERMISSION_DENIED"))).toBe(false);
+  });
+
+  it("returns false for unknown error messages", () => {
+    expect(isRetryableError(new Error("something random happened"))).toBe(false);
+  });
+});
+
+describe("Retry Edge Cases", () => {
+  it("works with maxRetries=0 (no retries, just one attempt)", async () => {
+    const fn = vi.fn().mockRejectedValue(new Error("500 error"));
+    await expect(withRetry(fn, { maxRetries: 0, baseDelayMs: 10 })).rejects.toThrow("500");
+    expect(fn).toHaveBeenCalledTimes(1);
+  });
+
+  it("wraps non-Error throws into Error objects", async () => {
+    const fn = vi.fn().mockRejectedValue("string error");
+    await expect(withRetry(fn, { maxRetries: 0, baseDelayMs: 10 })).rejects.toThrow("string error");
+  });
+
+  it("onRetry receives correct attempt numbers on multiple retries", async () => {
+    const onRetry = vi.fn();
+    const fn = vi
+      .fn()
+      .mockRejectedValueOnce(new Error("500 first"))
+      .mockRejectedValueOnce(new Error("502 second"))
+      .mockResolvedValue("ok");
+    await withRetry(fn, { maxRetries: 2, baseDelayMs: 10, onRetry });
+    expect(onRetry).toHaveBeenCalledTimes(2);
+    expect(onRetry).toHaveBeenNthCalledWith(1, 1, expect.any(Error));
+    expect(onRetry).toHaveBeenNthCalledWith(2, 2, expect.any(Error));
+  });
 });

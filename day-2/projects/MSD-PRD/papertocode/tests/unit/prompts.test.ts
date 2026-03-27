@@ -52,4 +52,29 @@ describe("Notebook Generation Prompt", () => {
       "Invalid Gemini response structure"
     );
   });
+
+  it("parseGeminiResponse handles whitespace around JSON", () => {
+    const padded = "  \n" + validJson + "\n  ";
+    const parsed = parseGeminiResponse(padded);
+    expect(parsed.paper_metadata).toBeDefined();
+  });
+
+  it("parseGeminiResponse handles triple-backtick without json label", () => {
+    const wrapped = "```\n" + validJson + "\n```";
+    const parsed = parseGeminiResponse(wrapped);
+    expect(parsed.paper_metadata).toBeDefined();
+  });
+
+  it("parseGeminiResponse throws on truncated JSON", () => {
+    expect(() => parseGeminiResponse('{"paper_metadata": {"title":')).toThrow();
+  });
+
+  it("parseGeminiResponse throws on empty string", () => {
+    expect(() => parseGeminiResponse("")).toThrow();
+  });
+
+  it("system prompt instructs to return ONLY JSON", () => {
+    expect(NOTEBOOK_SYSTEM_PROMPT).toContain("Return ONLY");
+    expect(NOTEBOOK_SYSTEM_PROMPT).toContain("valid JSON");
+  });
 });

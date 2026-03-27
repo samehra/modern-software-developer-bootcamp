@@ -89,4 +89,42 @@ describe("Gemini Output Schema Validation", () => {
     const result = validateGeminiOutput(null);
     expect(result.success).toBe(false);
   });
+
+  it("rejects undefined input", () => {
+    const result = validateGeminiOutput(undefined);
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects array input", () => {
+    const result = validateGeminiOutput([1, 2, 3]);
+    expect(result.success).toBe(false);
+  });
+
+  it("accepts paper_metadata with only required title field", () => {
+    const result = validateGeminiOutput({ paper_metadata: { title: "Minimal" } });
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects paper_metadata with missing title", () => {
+    const result = validateGeminiOutput({ paper_metadata: { authors: ["A"] } });
+    expect(result.success).toBe(false);
+  });
+
+  it("allows extra unknown fields to pass through", () => {
+    const result = validateGeminiOutput({
+      paper_metadata: { title: "Test" },
+      some_extra_field: "should be fine",
+    });
+    // Zod strips or passes unknown keys depending on config
+    // Either way, it shouldn't fail validation
+    expect(result.success).toBe(true);
+  });
+
+  it("returns descriptive error message for wrong types", () => {
+    const result = validateGeminiOutput({ paper_metadata: { title: 123 } });
+    expect(result.success).toBe(false);
+    expect(result.error).toBeDefined();
+    expect(typeof result.error).toBe("string");
+    expect(result.error!.length).toBeGreaterThan(0);
+  });
 });

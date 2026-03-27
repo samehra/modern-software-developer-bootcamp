@@ -156,4 +156,53 @@ describe("Notebook Builder", () => {
     const cells = nb.cells as Array<unknown>;
     expect(cells.length).toBeGreaterThanOrEqual(15);
   });
+
+  it("builds notebook from minimal input (paper_metadata only)", () => {
+    const minimal = JSON.stringify({
+      paper_metadata: { title: "Minimal Paper" },
+    });
+    const nb = buildNotebook(minimal);
+    const cells = nb.cells as Array<{ cell_type: string; source: string[] }>;
+    expect(cells.length).toBeGreaterThanOrEqual(2); // warning + title
+    expect(cells[0].source.join("")).toContain("auto-generated");
+    expect(cells[1].source.join("")).toContain("Minimal Paper");
+  });
+
+  it("sets Colab metadata with sanitized filename", () => {
+    const nb = buildNotebook(sampleGeminiOutput);
+    const meta = nb.metadata as Record<string, unknown>;
+    const colab = meta.colab as Record<string, unknown>;
+    expect(colab.name).toContain("Attention Is All You Need");
+    expect(colab.name).toMatch(/\.ipynb$/);
+  });
+
+  it("code cells have outputs array and null execution_count", () => {
+    const nb = buildNotebook(sampleGeminiOutput);
+    const cells = nb.cells as Array<{
+      cell_type: string;
+      outputs?: unknown[];
+      execution_count?: number | null;
+    }>;
+    const codeCells = cells.filter((c) => c.cell_type === "code");
+    for (const cell of codeCells) {
+      expect(cell.outputs).toEqual([]);
+      expect(cell.execution_count).toBeNull();
+    }
+  });
+
+  it("cell source arrays have proper newline termination", () => {
+    const nb = buildNotebook(sampleGeminiOutput);
+    const cells = nb.cells as Array<{ cell_type: string; source: string[] }>;
+    const codeCells = cells.filter((c) => c.cell_type === "code" && c.source.length > 1);
+    for (const cell of codeCells) {
+      // All lines except the last should end with \n
+      for (let i = 0; i < cell.source.length - 1; i++) {
+        expect(cell.source[i].endsWith("\n")).toBe(true);
+      }
+    }
+  });
+
+  it("throws on invalid JSON input", () => {
+    expect(() => buildNotebook("not json")).toThrow();
+  });
 });
