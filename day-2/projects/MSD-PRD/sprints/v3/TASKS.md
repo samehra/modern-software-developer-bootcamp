@@ -37,9 +37,10 @@
   - Files: papertocode/Dockerfile, papertocode/.dockerignore
   - Completed: 2026-03-26 — Created 3-stage multi-stage Dockerfile (deps → builder → runner) with node:20-alpine, non-root nextjs user, standalone output. Added output: "standalone" to next.config.ts. Created .dockerignore excluding node_modules, .next, .git, tests, .env*, infra, Dockerfile. Fixed pdfjs-dist v5 type error in pdf-preview.tsx. Build, 134 tests, semgrep, audit all clean.
 
-- [ ] Task 8: docker-compose.yml for local development (P1)
+- [x] Task 8: docker-compose.yml for local development (P1)
   - Acceptance: `docker-compose.yml` in `day-2/projects/MSD-PRD/papertocode/`. Single service `app` that builds from `./Dockerfile`, maps port 3000:3000, sets `NODE_ENV=production`. Optional env_file for `.env.local`. Verify: `docker compose up --build` starts the app and it responds on `http://localhost:3000`.
   - Files: papertocode/docker-compose.yml
+  - Completed: 2026-03-26 — Created docker-compose.yml with single `app` service, builds from Dockerfile, port 3000:3000, NODE_ENV=production, optional .env.local env_file, restart unless-stopped. docker compose config validates clean.
 
 - [ ] Task 9: Terraform config for AWS ECS Fargate (P1)
   - Acceptance: `infra/` directory in `day-2/projects/MSD-PRD/papertocode/` with Terraform files. `main.tf`: provider config (AWS), S3 backend for state. `ecr.tf`: ECR repository. `ecs.tf`: ECS cluster, task definition (256 CPU, 512 MiB memory, port 3000), service (desired count 1, Fargate launch type). `alb.tf`: Application Load Balancer, target group (health check on `/`), listener (port 80). `network.tf`: use default VPC and subnets, security groups (inbound 80 from anywhere, inbound 3000 from ALB, outbound all). `iam.tf`: ECS task execution role with AmazonECSTaskExecutionRolePolicy. `outputs.tf`: ALB DNS name, ECR repo URL. `variables.tf`: region, app name, image tag. Verify: `terraform init` and `terraform validate` succeed.
