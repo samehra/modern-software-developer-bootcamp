@@ -7,7 +7,11 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "test:e2e": "playwright test",
+    "test:quality": "playwright test tests/e2e/quality.spec.ts --headed"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",

@@ -1,0 +1,44 @@
+# Sprint v3 — Tasks: PaperToCode (Production-Ready)
+
+## Status: In Progress
+
+- [x] Task 1: Push repo to GitHub + add .env.example and vitest.config.ts (P0)
+  - Acceptance: Repo pushed to `samehra/modern-software-developer-bootcamp`. `.env.example` lists `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_REGION` with placeholder values. `vitest.config.ts` created with coverage reporting enabled. `yarn test` script added to package.json running `vitest run`. Verify with `git remote -v` showing `personal` remote and `yarn test` running all existing unit tests.
+  - Files: papertocode/vitest.config.ts, papertocode/package.json, .env.example
+  - Completed: 2026-03-26 — Created vitest.config.ts with v8 coverage and @ alias, added test/test:coverage/test:e2e/test:quality scripts to package.json, created .env.example with AWS + optional Gemini key placeholders, pushed to samehra/modern-software-developer-bootcamp. 66 unit tests passing, semgrep clean, yarn audit clean.
+
+- [ ] Task 2: Expand unit tests — gemini.ts, rate-limiter.ts, colab-link.ts, progress.ts (P0)
+  - Acceptance: Add edge-case unit tests: gemini.ts — error handling for generateNotebookContent (missing key, invalid buffer), createGeminiClient edge cases. rate-limiter.ts — concurrent IPs, window boundary timing, 0-request limit. colab-link.ts — special characters in filenames, empty notebook. progress.ts — all stages have required fields, formatSSEMessage with special characters. Target: 15+ new unit tests. All pass with `yarn test`.
+  - Files: tests/unit/gemini.test.ts, tests/unit/rate-limiter.test.ts, tests/unit/colab-link.test.ts, tests/unit/progress.test.ts
+
+- [ ] Task 3: Expand unit tests — sanitizer.ts, retry.ts, schema.ts, notebook-builder.ts, prompts.ts (P0)
+  - Acceptance: Add edge-case unit tests: sanitizer.ts — multi-line dangerous code, nested patterns, empty input. retry.ts — non-Error throws, zero retries, baseDelay=0. schema.ts — extra fields passthrough, deeply nested invalid data. notebook-builder.ts — empty sections array, missing optional fields, very long content. prompts.ts — malformed JSON edge cases (truncated, unicode, nested fences). Target: 15+ new unit tests. All pass with `yarn test`.
+  - Files: tests/unit/sanitizer.test.ts, tests/unit/retry.test.ts, tests/unit/schema.test.ts, tests/unit/notebook-builder.test.ts, tests/unit/prompts.test.ts
+
+- [ ] Task 4: Add integration tests for /api/generate route (P0)
+  - Acceptance: New `tests/integration/api-generate.test.ts` file using Vitest. Tests mock the Gemini SDK (vi.mock) and exercise the full route handler: (1) returns 429 after 6 rapid requests, (2) returns 400 for missing API key, (3) returns 400 for missing PDF, (4) returns 400 for oversized file, (5) returns 400 for non-PDF file, (6) returns SSE stream with progress events on success, (7) returns SSE error event when Gemini throws, (8) retry logic triggers on 5xx mock error. Target: 8-10 integration tests. All pass with `yarn test`.
+  - Files: tests/integration/api-generate.test.ts
+
+- [ ] Task 5: Add real E2E quality test — headed browser with live Gemini (P0)
+  - Acceptance: New `tests/e2e/quality.spec.ts` Playwright test configured for headed mode (`headless: false`). Reads `GEMINI_API_KEY` from environment. Uses PDF at path from `TEST_PDF_PATH` env var (default: `/Users/saurmehr/Downloads/GLIDE_Spotify.pdf`). Flow: open app → enter real API key → select Pro model → upload real PDF → wait for preview → click Generate → wait for completion (up to 120s) → download notebook → validate: (a) valid JSON, (b) has `paper_metadata.title`, (c) has at least 5 cells, (d) has warning banner cell, (e) has at least 1 code cell with Python. Takes screenshots at every step. Test is skipped in CI (checks for `GEMINI_API_KEY` env var). New npm script `test:quality` runs this test only. Verify: `GEMINI_API_KEY=AIza... yarn test:quality` completes successfully.
+  - Files: tests/e2e/quality.spec.ts, papertocode/package.json, papertocode/playwright.config.ts
+
+- [ ] Task 6: GitHub Actions CI workflow (P0)
+  - Acceptance: `.github/workflows/ci.yml` at repo root. Triggers on push and pull_request. Jobs: (1) install dependencies (`yarn install --frozen-lockfile`), (2) build (`yarn build`), (3) run unit + integration tests (`yarn test`), (4) install Playwright browsers + run E2E tests (`yarn playwright test`), (5) run semgrep (`npx semgrep --config auto day-2/projects/MSD-PRD/papertocode/src/ --quiet`), (6) run npm audit (`cd day-2/projects/MSD-PRD/papertocode && npm audit --audit-level=high`). All steps must pass. Working directory set to `day-2/projects/MSD-PRD/papertocode` for yarn/npm commands. Quality test is skipped (no `GEMINI_API_KEY` in CI). Verify: push to GitHub, see green CI run.
+  - Files: .github/workflows/ci.yml
+
+- [ ] Task 7: Dockerfile + .dockerignore for Next.js app (P1)
+  - Acceptance: Multi-stage Dockerfile in `day-2/projects/MSD-PRD/papertocode/`. Stage 1 (`deps`): install dependencies. Stage 2 (`builder`): build Next.js. Stage 3 (`runner`): minimal production image with `next start`. Uses `node:20-alpine`. Exposes port 3000. `.dockerignore` excludes node_modules, .next, .git, tests, .env. Verify: `docker build -t papertocode .` succeeds and `docker run -p 3000:3000 papertocode` serves the app.
+  - Files: papertocode/Dockerfile, papertocode/.dockerignore
+
+- [ ] Task 8: docker-compose.yml for local development (P1)
+  - Acceptance: `docker-compose.yml` in `day-2/projects/MSD-PRD/papertocode/`. Single service `app` that builds from `./Dockerfile`, maps port 3000:3000, sets `NODE_ENV=production`. Optional env_file for `.env.local`. Verify: `docker compose up --build` starts the app and it responds on `http://localhost:3000`.
+  - Files: papertocode/docker-compose.yml
+
+- [ ] Task 9: Terraform config for AWS ECS Fargate (P1)
+  - Acceptance: `infra/` directory in `day-2/projects/MSD-PRD/papertocode/` with Terraform files. `main.tf`: provider config (AWS), S3 backend for state. `ecr.tf`: ECR repository. `ecs.tf`: ECS cluster, task definition (256 CPU, 512 MiB memory, port 3000), service (desired count 1, Fargate launch type). `alb.tf`: Application Load Balancer, target group (health check on `/`), listener (port 80). `network.tf`: use default VPC and subnets, security groups (inbound 80 from anywhere, inbound 3000 from ALB, outbound all). `iam.tf`: ECS task execution role with AmazonECSTaskExecutionRolePolicy. `outputs.tf`: ALB DNS name, ECR repo URL. `variables.tf`: region, app name, image tag. Verify: `terraform init` and `terraform validate` succeed.
+  - Files: papertocode/infra/main.tf, papertocode/infra/ecr.tf, papertocode/infra/ecs.tf, papertocode/infra/alb.tf, papertocode/infra/network.tf, papertocode/infra/iam.tf, papertocode/infra/outputs.tf, papertocode/infra/variables.tf
+
+- [ ] Task 10: GitHub Actions CD workflow — build, push to ECR, deploy to ECS (P1)
+  - Acceptance: `.github/workflows/cd.yml` at repo root. Triggers on push to `main` only, after CI passes (use `workflow_run` or `needs`). Steps: (1) checkout code, (2) configure AWS credentials from GitHub Secrets, (3) login to ECR, (4) build Docker image with commit SHA tag, (5) push to ECR, (6) update ECS task definition with new image, (7) deploy new ECS service revision, (8) wait for service stability. Uses `aws-actions/configure-aws-credentials`, `aws-actions/amazon-ecr-login`, `aws-actions/amazon-ecs-render-task-definition`, `aws-actions/amazon-ecs-deploy-task-definition`. Requires secrets: `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_REGION`. Verify: push to main → CD workflow triggers → image pushed to ECR → ECS service updated.
+  - Files: .github/workflows/cd.yml
