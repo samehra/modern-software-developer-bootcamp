@@ -64,10 +64,16 @@ export async function POST(request: NextRequest) {
 
   // Streaming SSE response for the generation pipeline
   const encoder = new TextEncoder();
+  let aborted = false;
   const stream = new ReadableStream({
     async start(controller) {
       const send = (event: string, data: unknown) => {
-        controller.enqueue(encoder.encode(formatSSEMessage(event, data)));
+        if (aborted) return;
+        try {
+          controller.enqueue(encoder.encode(formatSSEMessage(event, data)));
+        } catch {
+          aborted = true;
+        }
       };
 
       try {
@@ -82,21 +88,35 @@ export async function POST(request: NextRequest) {
         send("progress", PROGRESS_STAGES[2]);
 
         // Stage 4: Generating code (this is where Gemini does most of the work)
+        // Send keepalive comments every 15s to prevent CloudFront/ALB timeout
         send("progress", PROGRESS_STAGES[3]);
-        const rawContent = await withRetry(
-          () => generateNotebookContent(apiKey, pdfBuffer, NOTEBOOK_SYSTEM_PROMPT, modelName),
-          {
-            maxRetries: 2,
-            baseDelayMs: 2000,
-            onRetry: (attempt) => {
-              send("progress", {
-                ...PROGRESS_STAGES[3],
-                label: `Retrying... (attempt ${attempt + 1})`,
-                description: "The API request failed. Retrying with exponential backoff...",
-              });
-            },
+        const keepalive = setInterval(() => {
+          if (aborted) return;
+          try {
+            controller.enqueue(encoder.encode(": keepalive\n\n"));
+          } catch {
+            aborted = true;
           }
-        );
+        }, 15_000);
+        let rawContent: string;
+        try {
+          rawContent = await withRetry(
+            () => generateNotebookContent(apiKey, pdfBuffer, NOTEBOOK_SYSTEM_PROMPT, modelName),
+            {
+              maxRetries: 2,
+              baseDelayMs: 2000,
+              onRetry: (attempt) => {
+                send("progress", {
+                  ...PROGRESS_STAGES[3],
+                  label: `Retrying... (attempt ${attempt + 1})`,
+                  description: "The API request failed. Retrying with exponential backoff...",
+                });
+              },
+            }
+          );
+        } finally {
+          clearInterval(keepalive);
+        }
 
         // Stage 5: Synthetic data
         send("progress", PROGRESS_STAGES[4]);
@@ -137,8 +157,13 @@ export async function POST(request: NextRequest) {
           });
         }
       } finally {
-        controller.close();
+        if (!aborted) {
+          try { controller.close(); } catch { /* already closed */ }
+        }
       }
+    },
+    cancel() {
+      aborted = true;
     },
   });
 
