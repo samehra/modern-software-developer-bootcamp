@@ -8,7 +8,7 @@ resource "aws_iam_role" "ecs_task_execution" {
         Action = "sts:AssumeRole"
         Effect = "Allow"
         Principal = {
-          Service = "ecs-fargate.amazonaws.com"
+          Service = "ecs-tasks.amazonaws.com"
         }
       }
     ]
