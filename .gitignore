@@ -11,3 +11,7 @@ dist/
 coverage/
 uploads/
 .task-manager/
+.terraform/
+*.tfstate
+*.tfstate.backup
+.terraform.lock.hcl
