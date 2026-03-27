@@ -37,7 +37,7 @@ export default function PdfPreview({ file }: PdfPreviewProps) {
         const ctx = canvas.getContext("2d");
         if (!ctx) return;
 
-        await page.render({ canvasContext: ctx, viewport }).promise;
+        await page.render({ canvasContext: ctx, viewport, canvas } as Parameters<typeof page.render>[0]).promise;
       } catch {
         if (!cancelled) setError(true);
       }

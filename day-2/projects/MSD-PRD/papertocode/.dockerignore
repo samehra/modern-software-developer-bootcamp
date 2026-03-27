@@ -1,0 +1,12 @@
+node_modules
+.next
+.git
+tests
+test-results
+playwright-report
+*.md
+.env
+.env.*
+infra
+Dockerfile
+docker-compose.yml

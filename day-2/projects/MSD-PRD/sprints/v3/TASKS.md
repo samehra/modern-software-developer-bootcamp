@@ -32,9 +32,10 @@
   - Files: .github/workflows/ci.yml
   - Completed: 2026-03-26 — Created .github/workflows/ci.yml: triggers on push/PR to main, Node 20 + Python 3.12, yarn install --frozen-lockfile, build, vitest run, Playwright install+test (quality auto-skipped), pip install semgrep + scan src/, yarn audit --level high. Working directory set to papertocode/. Will verify on push.
 
-- [ ] Task 7: Dockerfile + .dockerignore for Next.js app (P1)
+- [x] Task 7: Dockerfile + .dockerignore for Next.js app (P1)
   - Acceptance: Multi-stage Dockerfile in `day-2/projects/MSD-PRD/papertocode/`. Stage 1 (`deps`): install dependencies. Stage 2 (`builder`): build Next.js. Stage 3 (`runner`): minimal production image with `next start`. Uses `node:20-alpine`. Exposes port 3000. `.dockerignore` excludes node_modules, .next, .git, tests, .env. Verify: `docker build -t papertocode .` succeeds and `docker run -p 3000:3000 papertocode` serves the app.
   - Files: papertocode/Dockerfile, papertocode/.dockerignore
+  - Completed: 2026-03-26 — Created 3-stage multi-stage Dockerfile (deps → builder → runner) with node:20-alpine, non-root nextjs user, standalone output. Added output: "standalone" to next.config.ts. Created .dockerignore excluding node_modules, .next, .git, tests, .env*, infra, Dockerfile. Fixed pdfjs-dist v5 type error in pdf-preview.tsx. Build, 134 tests, semgrep, audit all clean.
 
 - [ ] Task 8: docker-compose.yml for local development (P1)
   - Acceptance: `docker-compose.yml` in `day-2/projects/MSD-PRD/papertocode/`. Single service `app` that builds from `./Dockerfile`, maps port 3000:3000, sets `NODE_ENV=production`. Optional env_file for `.env.local`. Verify: `docker compose up --build` starts the app and it responds on `http://localhost:3000`.
@@ -47,3 +48,7 @@
 - [ ] Task 10: GitHub Actions CD workflow — build, push to ECR, deploy to ECS (P1)
   - Acceptance: `.github/workflows/cd.yml` at repo root. Triggers on push to `main` only, after CI passes (use `workflow_run` or `needs`). Steps: (1) checkout code, (2) configure AWS credentials from GitHub Secrets, (3) login to ECR, (4) build Docker image with commit SHA tag, (5) push to ECR, (6) update ECS task definition with new image, (7) deploy new ECS service revision, (8) wait for service stability. Uses `aws-actions/configure-aws-credentials`, `aws-actions/amazon-ecr-login`, `aws-actions/amazon-ecs-render-task-definition`, `aws-actions/amazon-ecs-deploy-task-definition`. Requires secrets: `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_REGION`. Verify: push to main → CD workflow triggers → image pushed to ECR → ECS service updated.
   - Files: .github/workflows/cd.yml
+
+- [ ] Task 11: Audit — ensure GEMINI_API_KEY never leaks to GitHub (P0)
+  - Acceptance: (1) `.gitignore` excludes `.env` and `.env.local`, (2) `.dockerignore` excludes `.env` and `.env.*`, (3) No real API key (AIza...) hardcoded in any source or test file — only fake placeholder keys in tests, (4) `.env.example` contains only commented-out placeholder `# GEMINI_API_KEY=AIza...`, (5) `quality.spec.ts` reads key from `process.env.GEMINI_API_KEY` only, (6) CI workflow does not set or expose `GEMINI_API_KEY`, (7) Add a `pre-commit` grep guard script or document in README that real keys must never be committed. Verify: `grep -r 'AIzaSy[A-Za-z0-9_-]\{30\}' src/` returns zero matches.
+  - Files: .gitignore, .dockerignore, .env.example, tests/e2e/quality.spec.ts
