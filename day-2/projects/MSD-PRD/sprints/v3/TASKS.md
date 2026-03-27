@@ -27,9 +27,10 @@
   - Files: tests/e2e/quality.spec.ts, papertocode/package.json, papertocode/playwright.config.ts
   - Completed: 2026-03-26 — Created quality.spec.ts with 10-step flow: home → key → model → upload → preview → generate → progress → complete → download → validate. 7 screenshots at key steps. 5 notebook validations (nbformat, cells >= 5, warning banner, code cells with Python). 150s timeout for Gemini response. Auto-skipped when GEMINI_API_KEY not set (confirmed skipped in Playwright run). test:quality script added in Task 1.
 
-- [ ] Task 6: GitHub Actions CI workflow (P0)
+- [x] Task 6: GitHub Actions CI workflow (P0)
   - Acceptance: `.github/workflows/ci.yml` at repo root. Triggers on push and pull_request. Jobs: (1) install dependencies (`yarn install --frozen-lockfile`), (2) build (`yarn build`), (3) run unit + integration tests (`yarn test`), (4) install Playwright browsers + run E2E tests (`yarn playwright test`), (5) run semgrep (`npx semgrep --config auto day-2/projects/MSD-PRD/papertocode/src/ --quiet`), (6) run npm audit (`cd day-2/projects/MSD-PRD/papertocode && npm audit --audit-level=high`). All steps must pass. Working directory set to `day-2/projects/MSD-PRD/papertocode` for yarn/npm commands. Quality test is skipped (no `GEMINI_API_KEY` in CI). Verify: push to GitHub, see green CI run.
   - Files: .github/workflows/ci.yml
+  - Completed: 2026-03-26 — Created .github/workflows/ci.yml: triggers on push/PR to main, Node 20 + Python 3.12, yarn install --frozen-lockfile, build, vitest run, Playwright install+test (quality auto-skipped), pip install semgrep + scan src/, yarn audit --level high. Working directory set to papertocode/. Will verify on push.
 
 - [ ] Task 7: Dockerfile + .dockerignore for Next.js app (P1)
   - Acceptance: Multi-stage Dockerfile in `day-2/projects/MSD-PRD/papertocode/`. Stage 1 (`deps`): install dependencies. Stage 2 (`builder`): build Next.js. Stage 3 (`runner`): minimal production image with `next start`. Uses `node:20-alpine`. Exposes port 3000. `.dockerignore` excludes node_modules, .next, .git, tests, .env. Verify: `docker build -t papertocode .` succeeds and `docker run -p 3000:3000 papertocode` serves the app.

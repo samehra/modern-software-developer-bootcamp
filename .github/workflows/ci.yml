@@ -1,0 +1,53 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    name: Test & Security Scan
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: day-2/projects/MSD-PRD/papertocode
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Setup Python (for semgrep)
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Build
+        run: yarn build
+
+      - name: Run unit & integration tests
+        run: yarn test
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Run E2E tests
+        run: npx playwright test
+        # Quality test auto-skips (no GEMINI_API_KEY in CI)
+
+      - name: Install and run semgrep
+        run: |
+          pip install semgrep
+          semgrep --config auto src/ --quiet
+
+      - name: Run dependency audit
+        run: yarn audit --level high
